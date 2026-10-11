@@ -10,23 +10,58 @@
     <div class="container">
         <h1>📝 Мой список задач</h1>
 
+        <!-- Счетчик задач -->
+        <div class="stats">
+            <span class="stat-item">📊 Всего: <strong>{{ total }}</strong></span>
+            <span class="stat-item">✅ Выполнено: <strong>{{ completed }}</strong></span>
+            <span class="stat-item">⏳ Осталось: <strong>{{ total - completed }}</strong></span>
+        </div>
+
         <!-- Форма добавления задачи -->
         <form action="{{ url_for('add_task') }}" method="POST" class="add-form">
             <input type="text" name="content" placeholder="Введите новую задачу..." required>
-            <button type="submit">Добавить</button>
+            <button type="submit" class="btn-add">Добавить</button>
         </form>
 
         <!-- Список задач -->
+        {% if tasks|length > 0 %}
         <ul class="task-list">
             {% for task in tasks %}
-            <li class="task-item">
+            <li class="task-item {{ 'completed' if task.is_completed else '' }}">
+                <!-- Галочка выполнения -->
+                <a href="{{ url_for('toggle_task', task_id=task.id) }}" class="toggle-btn">
+                    {% if task.is_completed %}
+                        ✅
+                    {% else %}
+                        ⬜
+                    {% endif %}
+                </a>
+
+                <!-- Текст задачи -->
                 <span class="task-content">{{ task.content }}</span>
-                <a href="{{ url_for('delete_task', task_id=task.id) }}" class="delete-btn">✕</a>
+
+                <!-- Кнопки действий -->
+                <div class="task-actions">
+                    <!-- Редактирование -->
+                    <form action="{{ url_for('edit_task', task_id=task.id) }}" method="POST" class="edit-form">
+                        <input type="text" name="content" value="{{ task.content }}" class="edit-input">
+                        <button type="submit" class="btn-edit">💾</button>
+                    </form>
+
+                    <!-- Удаление -->
+                    <a href="{{ url_for('delete_task', task_id=task.id) }}" class="delete-btn" title="Удалить">✕</a>
+                </div>
             </li>
             {% endfor %}
         </ul>
 
-        {% if tasks|length == 0 %}
+        <!-- Кнопка очистки всего списка -->
+        <div class="clear-all-container">
+            <a href="{{ url_for('clear_all') }}" class="btn-clear" onclick="return confirm('Вы уверены, что хотите удалить ВСЕ задачи?')">
+                🗑️ Очистить весь список
+            </a>
+        </div>
+        {% else %}
         <p class="empty-message">Список задач пуст. Добавьте первую задачу!</p>
         {% endif %}
     </div>
