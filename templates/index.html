@@ -3,29 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Todo List</title>
+    <title>Todo List Pro</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>📝 Мой список задач</h1>
+        <h1> Мой список задач</h1>
 
+        <!-- Счетчик задач -->
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-number">{{ total }}</span>
+                <span class="stat-label">Всего</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number active">{{ active }}</span>
+                <span class="stat-label">Активных</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number completed">{{ completed }}</span>
+                <span class="stat-label">Выполнено</span>
+            </div>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="filters">
+            <a href="{{ url_for('index', filter='all') }}" class="filter-btn {{ 'active' if filter_type == 'all' else '' }}">Все</a>
+            <a href="{{ url_for('index', filter='active') }}" class="filter-btn {{ 'active' if filter_type == 'active' else '' }}">Активные</a>
+            <a href="{{ url_for('index', filter='completed') }}" class="filter-btn {{ 'active' if filter_type == 'completed' else '' }}">Выполненные</a>
+        </div>
+
+        <!-- Форма добавления задачи -->
         <form action="{{ url_for('add_task') }}" method="POST" class="add-form">
             <input type="text" name="content" placeholder="Введите новую задачу..." required>
-            <button type="submit">Добавить</button>
+            <select name="priority" class="priority-select">
+                <option value="low">Низкий</option>
+                <option value="medium" selected>Средний</option>
+                <option value="high">Высокий</option>
+            </select>
+            <button type="submit" class="btn-add">Добавить</button>
         </form>
 
+        <!-- Список задач -->
+        {% if tasks|length > 0 %}
         <ul class="task-list">
             {% for task in tasks %}
-            <li class="task-item">
-                <span class="task-content">{{ task.content }}</span>
-                <a href="{{ url_for('delete_task', task_id=task.id) }}" class="delete-btn">✕</a>
+            <li class="task-item {{ 'completed' if task.is_completed else '' }} priority-{{ task.priority }}">
+                <!-- Галочка выполнения -->
+                <a href="{{ url_for('toggle_task', task_id=task.id) }}" class="toggle-btn" title="Отметить выполнение">
+                    {% if task.is_completed %}
+                        ✅
+                    {% else %}
+                        ⬜
+                    {% endif %}
+                </a>
+
+                <!-- Информация о задаче -->
+                <div class="task-info">
+                    <span class="task-content">{{ task.content }}</span>
+                    <span class="task-date">{{ task.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                </div>
+
+                <!-- Кнопки действий -->
+                <div class="task-actions">
+                    <!-- Редактирование -->
+                    <form action="{{ url_for('edit_task', task_id=task.id) }}" method="POST" class="edit-form">
+                        <input type="text" name="content" value="{{ task.content }}" class="edit-input">
+                        <select name="priority" class="edit-priority">
+                            <option value="low" {{ 'selected' if task.priority == 'low' else '' }}>Низкий</option>
+                            <option value="medium" {{ 'selected' if task.priority == 'medium' else '' }}>Средний</option>
+                            <option value="high" {{ 'selected' if task.priority == 'high' else '' }}>Высокий</option>
+                        </select>
+                        <button type="submit" class="btn-edit" title="Сохранить">💾</button>
+                    </form>
+
+                    <!-- Удаление -->
+                    <a href="{{ url_for('delete_task', task_id=task.id) }}" class="delete-btn" title="Удалить">✕</a>
+                </div>
             </li>
             {% endfor %}
         </ul>
 
-        {% if tasks|length == 0 %}
-        <p class="empty-message">Список задач пуст. Добавьте первую задачу!</p>
+        <!-- Кнопки очистки -->
+        <div class="clear-buttons">
+            {% if completed > 0 %}
+            <a href="{{ url_for('clear_completed') }}" class="btn-clear-completed"
+               onclick="return confirm('Удалить только выполненные задачи?')">
+                ️ Очистить выполненные
+            </a>
+            {% endif %}
+
+            {% if total > 0 %}
+            <a href="{{ url_for('clear_all') }}" class="btn-clear-all"
+               onclick="return confirm('Вы уверены, что хотите удалить ВСЕ задачи?')">
+                ⚠️ Очистить всё
+            </a>
+            {% endif %}
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p class="empty-message">
+                {% if filter_type == 'active' %}
+                    Нет активных задач! 🎉
+                {% elif filter_type == 'completed' %}
+                    Нет выполненных задач.
+                {% else %}
+                    Список задач пуст. Добавьте первую задачу!
+                {% endif %}
+            </p>
+        </div>
         {% endif %}
     </div>
 </body>

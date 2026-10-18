@@ -19,17 +19,84 @@ body {
     border-radius: 20px;
     padding: 40px;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    max-width: 600px;
+    max-width: 800px;
     width: 100%;
 }
 
 h1 {
     text-align: center;
     color: #333;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
     font-size: 2.5em;
 }
 
+/* Счетчик задач */
+.stats {
+    display: flex;
+    justify-content: space-around;
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 25px;
+    gap: 15px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+}
+
+.stat-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #667eea;
+}
+
+.stat-number.active {
+    color: #ff9800;
+}
+
+.stat-number.completed {
+    color: #4caf50;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* Фильтры */
+.filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+
+.filter-btn {
+    padding: 10px 20px;
+    background: #f0f0f0;
+    color: #666;
+    text-decoration: none;
+    border-radius: 20px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.filter-btn:hover {
+    background: #667eea;
+    color: white;
+}
+
+.filter-btn.active {
+    background: #667eea;
+    color: white;
+}
+
+/* Форма добавления */
 .add-form {
     display: flex;
     gap: 10px;
@@ -50,7 +117,22 @@ h1 {
     border-color: #667eea;
 }
 
-.add-form button {
+.priority-select {
+    padding: 15px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    font-size: 14px;
+    cursor: pointer;
+    background: white;
+    transition: border-color 0.3s;
+}
+
+.priority-select:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.btn-add {
     padding: 15px 30px;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     color: white;
@@ -62,28 +144,29 @@ h1 {
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
-.add-form button:hover {
+.btn-add:hover {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
 }
 
-.add-form button:active {
+.btn-add:active {
     transform: translateY(0);
 }
 
+/* Список задач */
 .task-list {
     list-style: none;
 }
 
 .task-item {
     display: flex;
-    justify-content: space-between;
     align-items: center;
+    gap: 15px;
     padding: 15px 20px;
     margin-bottom: 10px;
     background: #f8f9fa;
     border-radius: 10px;
-    border-left: 4px solid #667eea;
+    border-left: 5px solid #667eea;
     transition: transform 0.2s, box-shadow 0.2s;
 }
 
@@ -92,10 +175,105 @@ h1 {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
 }
 
-.task-content {
+/* Приоритеты */
+.task-item.priority-high {
+    border-left-color: #f44336;
+}
+
+.task-item.priority-medium {
+    border-left-color: #ff9800;
+}
+
+.task-item.priority-low {
+    border-left-color: #4caf50;
+}
+
+/* Выполненная задача */
+.task-item.completed {
+    opacity: 0.6;
+}
+
+.task-item.completed .task-content {
+    text-decoration: line-through;
+    color: #999;
+}
+
+.toggle-btn {
+    font-size: 24px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.toggle-btn:hover {
+    transform: scale(1.2);
+}
+
+.task-info {
     flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.task-content {
     font-size: 16px;
     color: #333;
+}
+
+.task-date {
+    font-size: 12px;
+    color: #999;
+}
+
+.task-actions {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Форма редактирования */
+.edit-form {
+    display: flex;
+    gap: 5px;
+}
+
+.edit-input {
+    padding: 8px 12px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 14px;
+    width: 180px;
+    transition: border-color 0.3s;
+}
+
+.edit-input:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+.edit-priority {
+    padding: 8px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 12px;
+    cursor: pointer;
+    background: white;
+}
+
+.btn-edit {
+    padding: 8px 12px;
+    background: #4caf50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background 0.2s;
+}
+
+.btn-edit:hover {
+    background: #45a049;
 }
 
 .delete-btn {
@@ -113,14 +291,57 @@ h1 {
     color: white;
 }
 
-.empty-message {
-    text-align: center;
-    color: #999;
-    font-size: 18px;
-    margin-top: 30px;
+/* Кнопки очистки */
+.clear-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 25px;
+    flex-wrap: wrap;
 }
 
-@media (max-width: 600px) {
+.btn-clear-completed {
+    padding: 12px 25px;
+    background: #ff9800;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-clear-completed:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.4);
+}
+
+.btn-clear-all {
+    padding: 12px 25px;
+    background: #f44336;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    font-weight: bold;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-clear-all:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(244, 67, 54, 0.4);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.empty-message {
+    color: #999;
+    font-size: 18px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
     .container {
         padding: 20px;
     }
@@ -133,7 +354,29 @@ h1 {
         flex-direction: column;
     }
 
-    .add-form button {
+    .btn-add {
         width: 100%;
+    }
+
+    .stats {
+        flex-direction: column;
+    }
+
+    .task-item {
+        flex-wrap: wrap;
+    }
+
+    .task-actions {
+        width: 100%;
+        justify-content: flex-end;
+        margin-top: 10px;
+    }
+
+    .edit-input {
+        width: 140px;
+    }
+
+    .filters {
+        flex-wrap: wrap;
     }
 }
